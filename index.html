@@ -1146,7 +1146,7 @@
         <p class="form-sub">Fill out the form and we'll be in touch within 1 business day.</p>
         <form id="jmt-form" action="https://submit.jotform.com/submit/210317504801039/" method="post">
           <input type="hidden" name="formID" value="210317504801039">
-          <input type="hidden" name="simple_spc" value="210317504801039">
+          <input type="hidden" name="simple_spc" id="simple_spc" value="">
           <div class="hp-field" aria-hidden="true">
             <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
           </div>
@@ -1262,10 +1262,20 @@
       this.closest('.service-chip').classList.toggle('checked', this.checked);
     });
   });
+  // Set simple_spc timestamp after a delay (mimics Jotform's anti-spam)
+  setTimeout(function() {
+    var spc = document.getElementById('simple_spc');
+    if (spc) spc.value = String(Date.now());
+  }, 3000);
+
   // Prepend selected services to message before submit
   var jmtForm = document.getElementById('jmt-form');
   if (jmtForm) {
     jmtForm.addEventListener('submit', function() {
+      // Ensure simple_spc is set
+      var spc = document.getElementById('simple_spc');
+      if (spc && !spc.value) spc.value = String(Date.now());
+
       var checked = Array.from(jmtForm.querySelectorAll('input[name="services[]"]:checked'));
       if (checked.length > 0) {
         var msg = document.getElementById('message');
