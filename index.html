@@ -1276,12 +1276,15 @@
       var spc = document.getElementById('simple_spc');
       if (spc && !spc.value) spc.value = String(Date.now());
 
-      var checked = Array.from(jmtForm.querySelectorAll('input[name="services[]"]:checked'));
+      var checkboxes = Array.from(jmtForm.querySelectorAll('input[name="services[]"]'));
+      var checked = checkboxes.filter(function(c) { return c.checked; });
       if (checked.length > 0) {
         var msg = document.getElementById('message');
         var services = checked.map(function(c) { return c.value; }).join(', ');
         if (msg) msg.value = 'Services: ' + services + (msg.value.trim() ? '\n\n' + msg.value.trim() : '');
       }
+      // Remove checkbox names so they don't submit as unrecognized Jotform fields
+      checkboxes.forEach(function(c) { c.removeAttribute('name'); });
     });
   }
   </script>
