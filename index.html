@@ -1284,10 +1284,19 @@
     }
 
     function buildSrc(baseUrl, data) {
+      // JotForm's for-form-embed-handler.js auto-forwards the parent page's
+      // query string to the iframe. To avoid emitting each param twice, we
+      // skip any key already present (with a non-empty value) in the parent
+      // URL — JotForm will pass those through. We only inject the keys that
+      // live exclusively in localStorage (first-touch fields and any sticky
+      // last-touch values that aren't in the current URL).
+      var urlParams = new URLSearchParams(window.location.search);
       var qs = Object.keys(data)
         .filter(function(k) {
           var v = data[k];
-          return v !== null && v !== undefined && v !== '';
+          if (v === null || v === undefined || v === '') return false;
+          if (urlParams.has(k) && urlParams.get(k)) return false;
+          return true;
         })
         .map(function(k) {
           return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
