@@ -1137,59 +1137,31 @@
         </ul>
       </div>
 
-      <!-- Hidden iframe warms up Jotform session so CAPTCHA doesn't trigger on direct POST -->
-      <iframe src="https://form.jotform.com/210317504801039" style="display:none;width:0;height:0;border:0;" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
-
-      <!-- Right panel - Form -->
+      <!-- Right panel - JotForm native iframe embed -->
       <div class="form-right">
         <h3>Get Started Today</h3>
         <p class="form-sub">Fill out the form and we'll be in touch within 1 business day.</p>
-        <form id="jmt-form" action="https://submit.jotform.com/submit/210317504801039/" method="post">
-          <input type="hidden" name="formID" value="210317504801039">
-          <input type="hidden" name="simple_spc" id="simple_spc" value="">
-          <div class="hp-field" aria-hidden="true">
-            <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName">First Name <span class="req">*</span></label>
-              <input type="text" id="firstName" name="q3_name[first]" required placeholder="John" autocomplete="given-name">
-            </div>
-            <div class="form-group">
-              <label for="lastName">Last Name <span class="req">*</span></label>
-              <input type="text" id="lastName" name="q3_name[last]" required placeholder="Smith" autocomplete="family-name">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address <span class="req">*</span></label>
-            <input type="email" id="email" name="q4_email" required placeholder="john@yourcompany.com" autocomplete="email">
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone Number <span class="req">*</span></label>
-            <input type="tel" id="phone" name="q5_phoneNumber[full]" required placeholder="(904) 555-0100" autocomplete="tel">
-          </div>
-          <div class="form-group">
-            <span class="services-label">Services Interested In <span class="optional">(optional)</span></span>
-            <div class="services-grid">
-              <label class="service-chip"><input type="checkbox" name="services[]" value="SEO &amp; Local Search"> SEO &amp; Local Search</label>
-              <label class="service-chip"><input type="checkbox" name="services[]" value="Google Ads / PPC"> Google Ads / PPC</label>
-              <label class="service-chip"><input type="checkbox" name="services[]" value="Meta &amp; Social Ads"> Meta &amp; Social Ads</label>
-              <label class="service-chip"><input type="checkbox" name="services[]" value="Web Design"> Web Design</label>
-              <label class="service-chip"><input type="checkbox" name="services[]" value="Social Media Mgmt"> Social Media</label>
-              <label class="service-chip"><input type="checkbox" name="services[]" value="Email Marketing"> Email Marketing</label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="message">Message <span class="optional">(optional)</span></label>
-            <textarea id="message" name="q9_message" rows="3" placeholder="Tell me more about your business"></textarea>
-          </div>
-          <button type="submit" class="btn btn-red form-submit">Get a Free Consultation →</button>
-          <div class="form-promises">
-            <div class="form-promise">🔒 100% private</div>
-            <div class="form-promise">⚡ Reply in 1 business day</div>
-            <div class="form-promise">🚫 No spam, ever</div>
-          </div>
-        </form>
+
+        <!-- Native JotForm iframe. The src attribute is set by the attribution
+             script below so first-touch + last-touch params are appended as
+             query string values. JotForm's hidden fields are configured on
+             the form side to match these parameter names. -->
+        <iframe
+          id="JotFormIFrame-210317504801039"
+          data-jotform-base="https://form.jotform.com/210317504801039"
+          title="Get a Free Consultation — Jax Media Team"
+          allow="geolocation; microphone; camera; fullscreen; payment"
+          allowtransparency="true"
+          frameborder="0"
+          scrolling="no"
+          style="min-width:100%;max-width:100%;width:100%;height:760px;border:0;background:#fff;display:block;"
+        ></iframe>
+
+        <div class="form-promises">
+          <div class="form-promise">🔒 100% private</div>
+          <div class="form-promise">⚡ Reply in 1 business day</div>
+          <div class="form-promise">🚫 No spam, ever</div>
+        </div>
       </div>
 
     </div>
@@ -1255,35 +1227,112 @@
   })();
   </script>
 
+  <!-- ── ATTRIBUTION TRACKING ──────────────────────────────────────────
+       Captures and persists marketing/click-ID parameters in localStorage,
+       then appends them to the JotForm iframe src as query parameters so
+       the form's hidden fields receive them on submission.
+
+       First-touch fields (set once, never overwritten):
+         - first_visit_ts, landing_page, full_url, referrer
+
+       Last-touch fields (overwritten on every visit if present in URL):
+         - gclid, gbraid, wbraid, fbclid
+         - utm_source, utm_medium, utm_campaign, utm_term, utm_content
+
+       The matching hidden fields are already configured on the JotForm side
+       (form ID 210317504801039) with matching Unique Names.
+  ──────────────────────────────────────────────────────────────────── -->
   <script>
-  // Chip visual toggle
-  document.querySelectorAll('.service-chip input[type="checkbox"]').forEach(function(cb) {
-    cb.addEventListener('change', function() {
-      this.closest('.service-chip').classList.toggle('checked', this.checked);
-    });
-  });
-  // Set simple_spc timestamp after a delay (mimics Jotform's anti-spam)
-  setTimeout(function() {
-    var spc = document.getElementById('simple_spc');
-    if (spc) spc.value = String(Date.now());
-  }, 3000);
+  (function() {
+    var STORE_KEY     = 'jmt_attrib';
+    var IFRAME_ID     = 'JotFormIFrame-210317504801039';
+    // Params that should always reflect the most recent ad click / campaign
+    var LAST_TOUCH = [
+      'gclid', 'gbraid', 'wbraid', 'fbclid',
+      'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'
+    ];
 
-  // Prepend selected services to message before submit
-  var jmtForm = document.getElementById('jmt-form');
-  if (jmtForm) {
-    jmtForm.addEventListener('submit', function() {
-      // Ensure simple_spc is set
-      var spc = document.getElementById('simple_spc');
-      if (spc && !spc.value) spc.value = String(Date.now());
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
+      catch (e) { return {}; }
+    }
+    function writeStore(obj) {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(obj)); }
+      catch (e) { /* localStorage disabled — silent fail, current visit still attributed via URL */ }
+    }
 
-      var checked = Array.from(jmtForm.querySelectorAll('input[name="services[]"]:checked'));
-      if (checked.length > 0) {
-        var msg = document.getElementById('message');
-        var services = checked.map(function(c) { return c.value; }).join(', ');
-        if (msg) msg.value = 'Services: ' + services + (msg.value.trim() ? '\n\n' + msg.value.trim() : '');
+    function captureAttribution() {
+      var params = new URLSearchParams(window.location.search);
+      var data   = readStore();
+
+      // First-touch: set once, never overwritten
+      if (!data.first_visit_ts) {
+        data.first_visit_ts = new Date().toISOString();
+        data.landing_page   = window.location.pathname || '/';
+        data.full_url       = window.location.href;
+        data.referrer       = document.referrer || '';
       }
-    });
-  }
+
+      // Last-touch: refresh from current URL if present
+      LAST_TOUCH.forEach(function(key) {
+        var v = params.get(key);
+        if (v) data[key] = v;
+      });
+
+      writeStore(data);
+      return data;
+    }
+
+    function buildSrc(baseUrl, data) {
+      var qs = Object.keys(data)
+        .filter(function(k) {
+          var v = data[k];
+          return v !== null && v !== undefined && v !== '';
+        })
+        .map(function(k) {
+          return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+        })
+        .join('&');
+      return qs ? baseUrl + '?' + qs : baseUrl;
+    }
+
+    function init() {
+      var iframe = document.getElementById(IFRAME_ID);
+      if (!iframe) return;
+      var base = iframe.getAttribute('data-jotform-base');
+      if (!base) return;
+      var attribution = captureAttribution();
+      iframe.src = buildSrc(base, attribution);
+      // Expose for debugging / GA event listeners
+      window.JMT_ATTRIBUTION = attribution;
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+
+  <!-- JotForm embed handler — auto-resizes the iframe to fit form content -->
+  <script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
+  <script>
+  (function() {
+    function attachHandler() {
+      if (window.jotformEmbedHandler) {
+        window.jotformEmbedHandler(
+          "iframe[id='JotFormIFrame-210317504801039']",
+          "https://www.jotform.com"
+        );
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', attachHandler);
+    } else {
+      attachHandler();
+    }
+  })();
   </script>
 
 </body>
