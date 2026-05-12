@@ -37,6 +37,9 @@
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://form.jotform.com">
+  <link rel="preconnect" href="https://cdn.jotfor.ms">
+  <link rel="dns-prefetch" href="https://submit.jotform.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://elfsightcdn.com/platform.js" async></script>
@@ -513,7 +516,7 @@
 
     /* ── FORM SECTION ────────────────────── */
     .form-section { background: var(--off-white); padding: 0; }
-    .form-layout { display: grid; grid-template-columns: 1fr 1.5fr; max-width: 1100px; margin: 0 auto; box-shadow: 0 8px 40px rgba(0,0,0,0.1); }
+    .form-layout { display: grid; grid-template-columns: 1fr 1.5fr; max-width: 1100px; margin: 0 auto; box-shadow: 0 8px 40px rgba(0,0,0,0.1); align-items: start; }
     .form-left { background: var(--red); padding: 52px 40px; display: flex; flex-direction: column; justify-content: center; }
     .form-left .label-tag { background: rgba(255,255,255,0.2); color: var(--white); margin-bottom: 20px; align-self: flex-start; }
     .form-left h2 { color: var(--white); font-size: clamp(20px, 2.6vw, 28px); margin-bottom: 16px; line-height: 1.3; }
@@ -1148,13 +1151,15 @@
              the form side to match these parameter names. -->
         <iframe
           id="JotFormIFrame-210317504801039"
+          src="https://form.jotform.com/210317504801039"
           data-jotform-base="https://form.jotform.com/210317504801039"
           title="Get a Free Consultation — Jax Media Team"
           allow="geolocation; microphone; camera; fullscreen; payment"
           allowtransparency="true"
           frameborder="0"
           scrolling="no"
-          style="min-width:100%;max-width:100%;width:100%;height:760px;border:0;background:#fff;display:block;"
+          loading="eager"
+          style="width:100%;display:block;border:0;min-height:600px;"
         ></iframe>
 
         <div class="form-promises">
@@ -1244,8 +1249,8 @@
   ──────────────────────────────────────────────────────────────────── -->
   <script>
   (function() {
-    var STORE_KEY     = 'jmt_attrib';
-    var IFRAME_ID     = 'JotFormIFrame-210317504801039';
+    var STORE_KEY = 'jmt_attrib';
+    var IFRAME_ID = 'JotFormIFrame-210317504801039';
     // Params that should always reflect the most recent ad click / campaign
     var LAST_TOUCH = [
       'gclid', 'gbraid', 'wbraid', 'fbclid',
@@ -1316,30 +1321,28 @@
       window.JMT_ATTRIBUTION = attribution;
     }
 
+    // Loaded dynamically (vs. an inline <script src>) so the host Divi Code
+    // module stays compact and the resizer never blocks initial render.
+    function loadResizer() {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js';
+      s.async = true;
+      s.onload = function() {
+        if (window.jotformEmbedHandler) {
+          window.jotformEmbedHandler(
+            "iframe[id='" + IFRAME_ID + "']",
+            "https://www.jotform.com"
+          );
+        }
+      };
+      document.head.appendChild(s);
+    }
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('DOMContentLoaded', function() { init(); loadResizer(); });
     } else {
       init();
-    }
-  })();
-  </script>
-
-  <!-- JotForm embed handler — auto-resizes the iframe to fit form content -->
-  <script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
-  <script>
-  (function() {
-    function attachHandler() {
-      if (window.jotformEmbedHandler) {
-        window.jotformEmbedHandler(
-          "iframe[id='JotFormIFrame-210317504801039']",
-          "https://www.jotform.com"
-        );
-      }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', attachHandler);
-    } else {
-      attachHandler();
+      loadResizer();
     }
   })();
   </script>
